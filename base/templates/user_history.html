@@ -1,1 +1,31 @@
-<h1>Histórico</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Histórico do Usuário</title>
+</head>
+<body>
+    <h1>Histórico do Usuário</h1>
+    <h2>Olá, {{ user_profile.user.username }}!</h2>
+    
+    {% for date, trackers in grouped_trackers.items %}
+    <div class="history-entry">
+        <h3>Data: {{ date|date:"d/m/Y" }}</h3>
+        <p>Meta Diária: {{ daily_goal }} ml</p>
+        <!-- <ul>
+            {% for tracker in trackers %}
+            <li>{{ tracker.amount_ml }} ml at {{ tracker.timestamp|time }}</li>
+            {% endfor %}
+        </ul> -->
+        {% for consumed_date, total_amount in total_consumed %}
+            {% if consumed_date == date %}
+                <p>Quantidade total de água consumida: {{ total_amount }} ml</p>
+                <p>Atingiu a meta? {% if total_amount >= daily_goal %} Sim {% else %} Não {% endif %}</p>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endfor %}
+    
+    <a href="{% url 'consume_register' user_id=user_profile.user.id %}">Voltar</a>
+    
+</body>
+</html>
