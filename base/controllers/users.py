@@ -52,7 +52,7 @@ def user_history(request, user_id):
     
     trackers = ConsumedWater.objects.filter(user=user_profile).order_by('timestamp')
 
-    # Group tracker (ordered by date)
+    # Group tracker (ordered by date) to list consume by date
     grouped_trackers = {}
     for date, group in groupby(trackers, key=lambda x: x.timestamp.date()):
         grouped_trackers[str(date)] = list(group)
@@ -66,6 +66,7 @@ def user_history(request, user_id):
         total_amount = sum(tracker.amount_ml for tracker in trackers)
         total_consumed.append((date, total_amount))
 
+    # Goal achievment check
     goal_achievment = ""
     if total_amount >= daily_goal:
         goal_achievment = "Sim"

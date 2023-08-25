@@ -18,7 +18,7 @@ class UserHistorySerialize(serializers.Serializer):
     user_profile = UserProfileSerialize(source='user')
     daily_goal = serializers.IntegerField()
     total_consumed = serializers.ListField()
-    grouped_trackers = serializers.DictField(child=serializers.ListField(child=ConsumedWaterSerializer()))
+    grouped_trackers = serializers.DictField(child=serializers.ListField(child=ConsumedWaterSerializer())) # List consume by day
     goal_achievment = serializers.CharField(max_length=200)
 
 
