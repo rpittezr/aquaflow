@@ -25,7 +25,7 @@ virtualenv name
 source name/bin/activate
 ```
 
-< Install the requirements :
+> Install the requirements :
 ```bash
 pip install -r requirements.txt
 ```
