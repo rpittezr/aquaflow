@@ -3,8 +3,11 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.utils import timezone
 from django.db import models
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from base.controllers.serializers import UserProfileSerialize, UserHistorySerialize
 
-from .models import UserProfile, ConsumedWater
+from .models import UserProfile, ConsumedWater, UserHistory
 
 from datetime import datetime
 from itertools import groupby
@@ -14,9 +17,10 @@ def user_register(request):
         name = request.POST['name']
         weight = float(request.POST['weight'])
         user = User.objects.create_user(username=name)
-        UserProfile.objects.create(user=user, weight=weight)
+        UserProfile.objects.create(user=user, weight=weight, name=name)
         return redirect('consume_register', user_id=user.id)
     return render(request, 'user_register.html')
+
 
 def consume_register(request, user_id):
     user_profile = UserProfile.objects.get(user_id=user_id)
@@ -45,32 +49,4 @@ def consume_register(request, user_id):
     }
 
     return render(request, 'consume_register.html', context)
-
-def user_history(request, user_id):
-    user_profile = UserProfile.objects.get(user_id=user_id)
-    
-    trackers = ConsumedWater.objects.filter(user=user_profile).order_by('timestamp')
-
-    # Group tracker (ordered by date)
-    grouped_trackers = {}
-    for date, group in groupby(trackers, key=lambda x: x.timestamp.date()):
-        grouped_trackers[date] = list(group)
-    
-    # Calculate the goal
-    daily_goal = int(user_profile.weight * 35)
-
-    # Calculate consumed water per day
-    total_consumed = []
-    for date, trackers in grouped_trackers.items():
-        total_amount = sum(tracker.amount_ml for tracker in trackers)
-        total_consumed.append((date, total_amount))
-
-    context = {
-        'user_profile': user_profile,
-        'grouped_trackers': grouped_trackers,
-        'daily_goal': daily_goal,
-        'total_consumed': total_consumed,  # Pass the list of tuples to the template
-    }
-
-    return render(request, 'user_history.html', context)
 
